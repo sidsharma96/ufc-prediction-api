@@ -11,11 +11,15 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.redis import CACHE_KEY_ACCURACY_STATS, get_cached, set_cached
 from app.db.models import Fight, Fighter, FighterSnapshot
 from app.prediction_engine.confidence import ConfidenceScorer
 from app.prediction_engine.feature_extractor import FeatureExtractor, FighterFeatures
 from app.prediction_engine.predictor import Prediction, RuleBasedPredictor
 from app.prediction_engine.weights import PredictionWeights
+
+# Cache TTL for accuracy stats (24 hours)
+ACCURACY_CACHE_TTL = 86400
 
 
 class PredictionEngine:
@@ -146,12 +150,21 @@ class PredictionEngine:
 
         return predictions
 
-    async def get_accuracy_stats(self) -> dict[str, Any]:
+    async def get_accuracy_stats(self, use_cache: bool = True) -> dict[str, Any]:
         """Calculate prediction accuracy statistics.
+
+        Args:
+            use_cache: Whether to use Redis cache (default True)
 
         Returns:
             Dictionary with accuracy metrics
         """
+        # Try to get from cache first
+        if use_cache:
+            cached_stats = await get_cached(CACHE_KEY_ACCURACY_STATS)
+            if cached_stats is not None:
+                return cached_stats
+
         # Get completed fights that had predictions
         result = await self.db.execute(
             select(Fight)
@@ -234,12 +247,18 @@ class PredictionEngine:
             else:
                 conf_accuracy[label] = {"accuracy": 0.0, "count": 0}
 
-        return {
+        stats = {
             "total_predictions": total,
             "correct_predictions": correct,
             "accuracy": round(accuracy, 4),
             "by_confidence": conf_accuracy,
         }
+
+        # Cache the computed stats
+        if use_cache:
+            await set_cached(CACHE_KEY_ACCURACY_STATS, stats, ACCURACY_CACHE_TTL)
+
+        return stats
 
     async def _load_fight(self, fight_id: uuid.UUID) -> Fight | None:
         """Load fight with related data."""

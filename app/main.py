@@ -10,6 +10,7 @@ from app.api.v1.router import api_router
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.core.middleware import LoggingMiddleware
+from app.core.redis import close_redis, init_redis
 
 
 @asynccontextmanager
@@ -23,10 +24,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     print(f"Environment: {settings.app_env}")
     print(f"Debug: {settings.debug}")
 
+    # Initialize Redis
+    try:
+        await init_redis()
+        print("Redis connection established")
+    except Exception as e:
+        print(f"Redis connection failed: {e} (caching disabled)")
+
     yield
 
     # Shutdown
     print(f"Shutting down {settings.app_name}...")
+    await close_redis()
 
 
 def create_app() -> FastAPI:

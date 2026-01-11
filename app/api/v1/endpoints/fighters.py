@@ -53,6 +53,7 @@ async def list_fighters(
 
     if search:
         fighters = await repo.search(search, skip=offset, limit=per_page)
+        total = await repo.count_search(search)
     elif weight_class:
         fighters = await repo.get_by_weight_class(
             weight_class,
@@ -60,12 +61,13 @@ async def list_fighters(
             skip=offset,
             limit=per_page,
         )
+        total = await repo.count_by_weight_class(weight_class, active_only)
     elif active_only:
         fighters = await repo.get_active_fighters(skip=offset, limit=per_page)
+        total = await repo.count_active()
     else:
         fighters = await repo.get_all(skip=offset, limit=per_page)
-
-    total = await repo.count()
+        total = await repo.count()
 
     items = [
         FighterListItem(

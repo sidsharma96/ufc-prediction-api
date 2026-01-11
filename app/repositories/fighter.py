@@ -174,6 +174,54 @@ class FighterRepository(BaseRepository[Fighter]):
         )
         return result.scalar_one_or_none()
 
+    async def count_search(self, query: str) -> int:
+        """Count fighters matching search query.
+
+        Args:
+            query: Search query
+
+        Returns:
+            Number of matching fighters
+        """
+        search_term = f"%{query.lower()}%"
+        result = await self.db.execute(
+            select(func.count()).select_from(Fighter).where(
+                or_(
+                    func.lower(Fighter.first_name).like(search_term),
+                    func.lower(Fighter.last_name).like(search_term),
+                    func.lower(Fighter.nickname).like(search_term),
+                )
+            )
+        )
+        return result.scalar_one()
+
+    async def count_by_weight_class(
+        self,
+        weight_class: str,
+        active_only: bool = True,
+    ) -> int:
+        """Count fighters in weight class.
+
+        Args:
+            weight_class: Weight class name
+            active_only: Only count active fighters
+
+        Returns:
+            Number of fighters in weight class
+        """
+        conditions = [func.lower(Fighter.weight_class) == weight_class.lower()]
+        if active_only:
+            conditions.append(Fighter.is_active.is_(True))
+        return await self.count(*conditions)
+
+    async def count_active(self) -> int:
+        """Count active fighters.
+
+        Returns:
+            Number of active fighters
+        """
+        return await self.count(Fighter.is_active.is_(True))
+
     async def upsert_by_ufc_id(
         self,
         ufc_id: str,

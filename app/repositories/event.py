@@ -185,6 +185,45 @@ class EventRepository(BaseRepository[Event]):
         )
         return result.scalars().all()
 
+    async def count_upcoming(self) -> int:
+        """Count upcoming events.
+
+        Returns:
+            Number of upcoming events
+        """
+        return await self.count(
+            Event.is_completed.is_(False),
+            Event.is_cancelled.is_(False),
+            Event.date >= date.today(),
+        )
+
+    async def count_completed(self) -> int:
+        """Count completed events.
+
+        Returns:
+            Number of completed events
+        """
+        return await self.count(Event.is_completed.is_(True))
+
+    async def count_by_date_range(
+        self,
+        from_date: date,
+        to_date: date,
+    ) -> int:
+        """Count events within date range.
+
+        Args:
+            from_date: Start date (inclusive)
+            to_date: End date (inclusive)
+
+        Returns:
+            Number of events in range
+        """
+        return await self.count(
+            Event.date >= from_date,
+            Event.date <= to_date,
+        )
+
     async def upsert_by_ufc_id(
         self,
         ufc_id: str,

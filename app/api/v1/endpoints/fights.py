@@ -44,10 +44,10 @@ async def list_fights(
 
     if upcoming:
         fights = await repo.get_upcoming(skip=offset, limit=per_page)
+        total = await repo.count_upcoming()
     else:
         fights = await repo.get_all_with_details(skip=offset, limit=per_page)
-
-    total = await repo.count()
+        total = await repo.count()
 
     items = []
     for f in fights:

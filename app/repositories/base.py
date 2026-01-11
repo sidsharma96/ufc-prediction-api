@@ -83,15 +83,19 @@ class BaseRepository(Generic[ModelType]):
         )
         return result.scalars().all()
 
-    async def count(self) -> int:
-        """Count total records.
+    async def count(self, *conditions) -> int:
+        """Count records with optional filter conditions.
+
+        Args:
+            *conditions: SQLAlchemy filter conditions
 
         Returns:
-            Total number of records
+            Number of matching records
         """
-        result = await self.db.execute(
-            select(func.count()).select_from(self.model)
-        )
+        query = select(func.count()).select_from(self.model)
+        if conditions:
+            query = query.where(*conditions)
+        result = await self.db.execute(query)
         return result.scalar_one()
 
     async def create(self, obj_in: dict[str, Any]) -> ModelType:

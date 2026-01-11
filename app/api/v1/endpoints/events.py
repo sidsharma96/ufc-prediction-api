@@ -51,14 +51,16 @@ async def list_events(
             skip=offset,
             limit=per_page,
         )
+        total = await repo.count_by_date_range(from_date, to_date)
     elif completed is True:
         events = await repo.get_completed(skip=offset, limit=per_page)
+        total = await repo.count_completed()
     elif completed is False:
         events = await repo.get_upcoming(limit=per_page)
+        total = await repo.count_upcoming()
     else:
         events = await repo.get_all(skip=offset, limit=per_page)
-
-    total = await repo.count()
+        total = await repo.count()
 
     items = [
         EventListItem(

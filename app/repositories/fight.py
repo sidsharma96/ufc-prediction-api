@@ -4,7 +4,7 @@ import uuid
 from collections.abc import Sequence
 from datetime import date
 
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import selectinload
 
 from app.db.models import Event, Fight, FighterSnapshot
@@ -251,6 +251,23 @@ class FightRepository(BaseRepository[Fight]):
             )
         )
         return result.scalar_one_or_none()
+
+    async def count_upcoming(self) -> int:
+        """Count upcoming scheduled fights.
+
+        Returns:
+            Number of upcoming fights
+        """
+        result = await self.db.execute(
+            select(func.count())
+            .select_from(Fight)
+            .join(Event)
+            .where(
+                Fight.status == "scheduled",
+                Event.date >= date.today(),
+            )
+        )
+        return result.scalar_one()
 
     async def update_result(
         self,
