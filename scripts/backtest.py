@@ -99,17 +99,11 @@ async def run_backtest(limit: int = 500, verbose: bool = False) -> dict:
                     continue
 
                 # Extract features
-                f1_features = extractor.extract_from_snapshot(
-                    f1_snapshot, fight.fighter1
-                )
-                f2_features = extractor.extract_from_snapshot(
-                    f2_snapshot, fight.fighter2
-                )
+                f1_features = extractor.extract_from_snapshot(f1_snapshot, fight.fighter1)
+                f2_features = extractor.extract_from_snapshot(f2_snapshot, fight.fighter2)
 
                 # Make prediction
-                prediction = predictor.predict(
-                    f1_features, f2_features, fight_id=str(fight.id)
-                )
+                prediction = predictor.predict(f1_features, f2_features, fight_id=str(fight.id))
 
                 # Check result
                 stats["total"] += 1
@@ -148,9 +142,7 @@ async def run_backtest(limit: int = 500, verbose: bool = False) -> dict:
                         if fight.winner_id == fight.fighter1_id
                         else fight.fighter2.full_name
                     )
-                    print(
-                        f"{result_icon} {fight.fighter1.full_name} vs {fight.fighter2.full_name}"
-                    )
+                    print(f"{result_icon} {fight.fighter1.full_name} vs {fight.fighter2.full_name}")
                     print(
                         f"  Predicted: {prediction.predicted_winner_name} "
                         f"({prediction.win_probability:.1%}, {prediction.confidence_label})"

@@ -123,9 +123,7 @@ async def run_import(
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Import UFC data from Kaggle CSV files"
-    )
+    parser = argparse.ArgumentParser(description="Import UFC data from Kaggle CSV files")
     parser.add_argument(
         "data_dir",
         type=str,

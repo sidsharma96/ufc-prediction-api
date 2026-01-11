@@ -286,7 +286,7 @@ class KaggleAdapter(DataSourceAdapter):
             "date": ["date", "event_date", "fight_date"],
             "event": ["event", "event_name", "location"],
             "weight_class": ["weight_class", "weightclass", "division"],
-            "winner": ["winner", "result", "fight_winner"],
+            "winner": ["winner", "result", "fight_winner", "status"],
             "method": ["method", "win_by", "finish"],
             "round": ["round", "last_round", "ending_round"],
             "time": ["time", "last_round_time", "ending_time"],
@@ -542,9 +542,11 @@ class KaggleAdapter(DataSourceAdapter):
                         is_draw = True
                     elif winner_lower in ["nc", "no contest"]:
                         is_no_contest = True
-                    elif winner_lower in ["red", "r"] or winner.lower() == r_name.lower():
+                    elif winner_lower in ["red", "r", "win"] or winner.lower() == r_name.lower():
+                        # "win" means red corner (fighter1) won
                         winner_name = r_name
-                    elif winner_lower in ["blue", "b"] or winner.lower() == b_name.lower():
+                    elif winner_lower in ["blue", "b", "loss"] or winner.lower() == b_name.lower():
+                        # "loss" means blue corner (fighter2) won
                         winner_name = b_name
                     else:
                         # Winner might be the actual name

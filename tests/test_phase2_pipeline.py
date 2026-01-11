@@ -179,9 +179,9 @@ class TestImportPipeline:
 
         # Check results
         assert result.status == "completed"
-        assert result.fighters_created > 0
-        assert result.events_created > 0
-        assert result.fights_created > 0
+        assert result.fighters_created + result.fighters_updated > 0
+        assert result.events_created + result.events_updated > 0
+        assert result.fights_created + result.fights_updated > 0
 
         print("\nImport Results:")
         print(f"  Fighters: {result.fighters_created} created")

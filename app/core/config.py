@@ -46,6 +46,7 @@ class Settings(BaseSettings):
             # Fly.io internal connections don't need SSL anyway
             if "sslmode=" in v:
                 import re
+
                 v = re.sub(r"[?&]sslmode=[^&]*", "", v)
                 # Clean up any trailing ? or &
                 v = v.rstrip("?&")
