@@ -10,9 +10,9 @@ from app.api.v1.schemas.event import (
 )
 from app.api.v1.schemas.fight import (
     FightDetail,
-    FightListItem,
     FighterBrief,
     FighterSnapshotBrief,
+    FightListItem,
     FightsResponse,
     FightWithPrediction,
     PredictionBrief,
@@ -21,8 +21,8 @@ from app.api.v1.schemas.fighter import (
     FighterDetail,
     FighterHistory,
     FighterListItem,
-    FighterStats,
     FightersResponse,
+    FighterStats,
     FighterWithStats,
     FightHistoryItem,
 )

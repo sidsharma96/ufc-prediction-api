@@ -35,7 +35,6 @@ async def list_fights(
     repo: Annotated[FightRepository, Depends(get_fight_repo)],
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(20, ge=1, le=100, description="Items per page"),
-    status: str | None = Query(None, description="Filter by status"),
     upcoming: bool = Query(False, description="Only upcoming fights"),
 ) -> FightsResponse:
     """List fights with pagination and filters."""

@@ -87,6 +87,7 @@ jobs:
           TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/ufc_predictions_test
           REDIS_URL: redis://localhost:6379/0
           APP_ENV: test
+          JWT_SECRET_KEY: test-secret-key-for-ci
         run: |
           pytest tests/unit -v --cov=app --cov-report=xml
 
@@ -96,6 +97,7 @@ jobs:
           TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/ufc_predictions_test
           REDIS_URL: redis://localhost:6379/0
           APP_ENV: test
+          JWT_SECRET_KEY: test-secret-key-for-ci
         run: |
           pytest tests/integration -v --cov=app --cov-append --cov-report=xml --cov-report=term-missing
 
