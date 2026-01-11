@@ -1,0 +1,7 @@
+r_fighter,b_fighter,date,event,weight_class,winner,method,round,time,title_bout,r_height,r_reach,r_stance,r_dob,b_height,b_reach,b_stance,b_dob
+Conor McGregor,Dustin Poirier,2021-07-10,UFC 264: Poirier vs. McGregor 3,Lightweight,Dustin Poirier,TKO - Doctor Stoppage,1,5:00,False,5'9",74",Southpaw,1988-07-14,5'9",72",Southpaw,1989-01-19
+Dustin Poirier,Conor McGregor,2021-01-23,UFC 257: Poirier vs. McGregor 2,Lightweight,Dustin Poirier,KO/TKO - Punches,2,2:32,False,5'9",72",Southpaw,1989-01-19,5'9",74",Southpaw,1988-07-14
+Khabib Nurmagomedov,Justin Gaethje,2020-10-24,UFC 254: Khabib vs. Gaethje,Lightweight,Khabib Nurmagomedov,Submission - Triangle Choke,2,1:34,True,5'10",70",Orthodox,1988-09-20,5'11",70",Orthodox,1988-11-14
+Israel Adesanya,Robert Whittaker,2022-02-12,UFC 271: Adesanya vs. Whittaker 2,Middleweight,Israel Adesanya,Decision (Unanimous),5,5:00,True,6'4",80",Switch,1989-07-22,5'11",73.5",Orthodox,1990-12-20
+Amanda Nunes,Julianna Pena,2021-12-11,UFC 269: Oliveira vs. Poirier,Women's Bantamweight,Julianna Pena,Submission - Rear Naked Choke,2,3:26,True,5'8",69",Orthodox,1988-05-30,5'6",67",Orthodox,1989-08-19
+Jon Jones,Ciryl Gane,2023-03-04,UFC 285: Jones vs. Gane,Heavyweight,Jon Jones,Submission - Guillotine Choke,1,2:04,True,6'4",84.5",Orthodox,1987-07-19,6'4.5",81",Orthodox,1990-04-12
