@@ -40,8 +40,15 @@ class Settings(BaseSettings):
             if v.startswith("postgres://"):
                 v = v.replace("postgres://", "postgresql://", 1)
             # Add asyncpg driver if not present
-            if v.startswith("postgresql://"):
+            if v.startswith("postgresql://") and "+asyncpg" not in v:
                 v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+            # Remove sslmode parameter as asyncpg uses 'ssl' instead
+            # Fly.io internal connections don't need SSL anyway
+            if "sslmode=" in v:
+                import re
+                v = re.sub(r"[?&]sslmode=[^&]*", "", v)
+                # Clean up any trailing ? or &
+                v = v.rstrip("?&")
         return v
 
     # Redis
