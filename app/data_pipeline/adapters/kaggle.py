@@ -4,6 +4,7 @@ Parses CSV files from common Kaggle UFC datasets.
 Supports the popular "UFC Fight Data" format and similar datasets.
 """
 
+import contextlib
 import csv
 import re
 from datetime import date, datetime
@@ -336,9 +337,7 @@ class KaggleAdapter(DataSourceAdapter):
             reach_cm=parse_reach_to_cm(str(reach_str) if reach_str else None),
             stance=str(self._get_column(row, f"{prefix}_stance") or "").title() or None,
             date_of_birth=parse_date(str(dob_str) if dob_str else None),
-            weight_class=normalize_weight_class(
-                str(self._get_column(row, "weight_class") or "")
-            ),
+            weight_class=normalize_weight_class(str(self._get_column(row, "weight_class") or "")),
             source=DataSourceType.KAGGLE,
             raw_data={"prefix": prefix, "row": dict(row)},
         )
@@ -472,7 +471,11 @@ class KaggleAdapter(DataSourceAdapter):
                     if "ufc" in name_lower:
                         if re.search(r"ufc\s+\d+", name_lower):
                             event_type = "numbered"
-                        elif "fight night" in name_lower or "on espn" in name_lower or "on fox" in name_lower:
+                        elif (
+                            "fight night" in name_lower
+                            or "on espn" in name_lower
+                            or "on fox" in name_lower
+                        ):
                             event_type = "fight_night"
 
                     events_dict[event_key] = RawEvent(
@@ -551,10 +554,8 @@ class KaggleAdapter(DataSourceAdapter):
                 round_str = self._get_column(row, "round")
                 ending_round = None
                 if round_str:
-                    try:
+                    with contextlib.suppress(ValueError, TypeError):
                         ending_round = int(round_str)
-                    except (ValueError, TypeError):
-                        pass
 
                 ending_time = str(self._get_column(row, "time") or "").strip() or None
 
@@ -566,9 +567,10 @@ class KaggleAdapter(DataSourceAdapter):
                     is_title = title_str in ["true", "1", "yes", "t"]
 
                 # Get weight class
-                weight_class = normalize_weight_class(
-                    str(self._get_column(row, "weight_class") or "")
-                ) or "Unknown"
+                weight_class = (
+                    normalize_weight_class(str(self._get_column(row, "weight_class") or ""))
+                    or "Unknown"
+                )
 
                 # Extract fighter stats for snapshots
                 r_stats = self._extract_fighter_stats(row, "r")

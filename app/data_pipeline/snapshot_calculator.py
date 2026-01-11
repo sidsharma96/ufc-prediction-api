@@ -389,9 +389,7 @@ class SnapshotCalculator:
         # Get event date
         event = fight.event
         if not event:
-            result = await self.db.execute(
-                select(Event).where(Event.id == fight.event_id)
-            )
+            result = await self.db.execute(select(Event).where(Event.id == fight.event_id))
             event = result.scalar_one()
 
         # Get fight history before this fight

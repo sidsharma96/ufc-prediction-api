@@ -236,7 +236,9 @@ class UFCAdapter(DataSourceAdapter):
             # If no date found, try to extract from page content
             if not event_date:
                 # Look for date pattern in page
-                date_pattern = r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4}"
+                date_pattern = (
+                    r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4}"
+                )
                 date_match = re.search(date_pattern, soup.get_text())
                 if date_match:
                     event_date = parse_ufc_date(date_match.group())
@@ -428,7 +430,7 @@ class UFCAdapter(DataSourceAdapter):
             if len(fighter_links) < 2:
                 # Try finding by text content
                 text = container.get_text(separator="\n")
-                lines = [l.strip() for l in text.split("\n") if l.strip()]
+                lines = [ln.strip() for ln in text.split("\n") if ln.strip()]
 
                 # Look for "vs" pattern
                 for i, line in enumerate(lines):
@@ -451,13 +453,9 @@ class UFCAdapter(DataSourceAdapter):
 
             # Get weight class
             weight_class = "Unknown"
-            weight_elem = container.find(
-                class_=re.compile(r"weight|division|class", re.I)
-            )
+            weight_elem = container.find(class_=re.compile(r"weight|division|class", re.I))
             if weight_elem:
-                weight_class = normalize_weight_class(
-                    weight_elem.get_text(strip=True)
-                ) or "Unknown"
+                weight_class = normalize_weight_class(weight_elem.get_text(strip=True)) or "Unknown"
 
             # Check for title fight
             text_content = container.get_text().lower()
@@ -506,7 +504,7 @@ class UFCAdapter(DataSourceAdapter):
 
         # Get all text and look for "vs" patterns
         text = soup.get_text(separator="\n")
-        lines = [l.strip() for l in text.split("\n") if l.strip()]
+        lines = [ln.strip() for ln in text.split("\n") if ln.strip()]
 
         # Filter out very short lines and clean up
         cleaned_lines = []
@@ -547,29 +545,39 @@ class UFCAdapter(DataSourceAdapter):
                 is_title = False
                 for j in range(max(0, i - 3), min(len(lines), i + 5)):
                     line_lower = lines[j].lower()
-                    if any(w in line_lower for w in [
-                        "flyweight", "bantamweight", "featherweight",
-                        "lightweight", "welterweight", "middleweight",
-                        "heavyweight", "strawweight"
-                    ]):
+                    if any(
+                        w in line_lower
+                        for w in [
+                            "flyweight",
+                            "bantamweight",
+                            "featherweight",
+                            "lightweight",
+                            "welterweight",
+                            "middleweight",
+                            "heavyweight",
+                            "strawweight",
+                        ]
+                    ):
                         weight_class = normalize_weight_class(lines[j]) or "Unknown"
                         if "title" in line_lower:
                             is_title = True
                         break
 
                 fight_order += 1
-                fights.append(RawFight(
-                    fighter1_name=fighter1_name,
-                    fighter2_name=fighter2_name,
-                    weight_class=weight_class,
-                    event_name=event_name,
-                    event_date=event_date,
-                    is_title_fight=is_title,
-                    is_main_event=False,
-                    scheduled_rounds=5 if is_title else 3,
-                    fight_order=fight_order,
-                    source=DataSourceType.UFC_SCRAPER,
-                ))
+                fights.append(
+                    RawFight(
+                        fighter1_name=fighter1_name,
+                        fighter2_name=fighter2_name,
+                        weight_class=weight_class,
+                        event_name=event_name,
+                        event_date=event_date,
+                        is_title_fight=is_title,
+                        is_main_event=False,
+                        scheduled_rounds=5 if is_title else 3,
+                        fight_order=fight_order,
+                        source=DataSourceType.UFC_SCRAPER,
+                    )
+                )
                 i += 3
             else:
                 i += 1
@@ -587,14 +595,14 @@ class UFCAdapter(DataSourceAdapter):
 
     async def fetch_events(
         self,
-        start_date: date | None = None,
-        end_date: date | None = None,
+        _start_date: date | None = None,
+        _end_date: date | None = None,
     ) -> list[RawEvent]:
         """Fetch events from UFC.com.
 
         Args:
-            start_date: Optional start date filter
-            end_date: Optional end date filter
+            _start_date: Optional start date filter (not used by scraper)
+            _end_date: Optional end date filter (not used by scraper)
 
         Returns:
             List of events
@@ -636,16 +644,16 @@ class UFCAdapter(DataSourceAdapter):
 
     async def fetch_fights(
         self,
-        event_name: str | None = None,
-        start_date: date | None = None,
-        end_date: date | None = None,
+        _event_name: str | None = None,
+        _start_date: date | None = None,
+        _end_date: date | None = None,
     ) -> list[RawFight]:
         """Fetch fights from UFC.com.
 
         Args:
-            event_name: Optional event name filter
-            start_date: Optional start date filter
-            end_date: Optional end date filter
+            _event_name: Optional event name filter (not used by scraper)
+            _start_date: Optional start date filter (not used by scraper)
+            _end_date: Optional end date filter (not used by scraper)
 
         Returns:
             List of fights

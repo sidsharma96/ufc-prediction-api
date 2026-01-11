@@ -2,7 +2,7 @@
 
 import time
 import uuid
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -32,10 +32,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         except Exception as e:
             # Log error
             duration = time.perf_counter() - start_time
-            print(
-                f"[{request_id}] {request.method} {request.url.path} "
-                f"ERROR {duration:.3f}s - {e}"
-            )
+            print(f"[{request_id}] {request.method} {request.url.path} ERROR {duration:.3f}s - {e}")
             raise
 
         # Calculate duration

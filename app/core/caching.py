@@ -1,7 +1,7 @@
 """HTTP caching utilities for API responses."""
 
+from collections.abc import Callable
 from functools import wraps
-from typing import Callable
 
 from fastapi import Response
 

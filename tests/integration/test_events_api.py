@@ -75,9 +75,7 @@ class TestUpcomingEvents:
         """Test limit parameter."""
         for i in range(10):
             await EventFactory.create(
-                db_session,
-                name=f"UFC {i}",
-                date=date.today() + timedelta(days=i + 1)
+                db_session, name=f"UFC {i}", date=date.today() + timedelta(days=i + 1)
             )
         await db_session.commit()
 

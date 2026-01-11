@@ -28,10 +28,10 @@ class ConfidenceFactors:
             "historical_accuracy": 0.1,
         }
         return (
-            self.data_quality * weights["data_quality"] +
-            self.experience_level * weights["experience_level"] +
-            self.matchup_clarity * weights["matchup_clarity"] +
-            self.historical_accuracy * weights["historical_accuracy"]
+            self.data_quality * weights["data_quality"]
+            + self.experience_level * weights["experience_level"]
+            + self.matchup_clarity * weights["matchup_clarity"]
+            + self.historical_accuracy * weights["historical_accuracy"]
         )
 
 

@@ -66,7 +66,7 @@ class ExternalServiceException(AppException):
         super().__init__(msg, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
-async def app_exception_handler(request: Request, exc: AppException) -> JSONResponse:
+async def app_exception_handler(_request: Request, exc: AppException) -> JSONResponse:
     """Handle application exceptions."""
     return JSONResponse(
         status_code=exc.status_code,
@@ -79,7 +79,7 @@ async def app_exception_handler(request: Request, exc: AppException) -> JSONResp
     )
 
 
-async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+async def http_exception_handler(_request: Request, exc: HTTPException) -> JSONResponse:
     """Handle HTTP exceptions."""
     return JSONResponse(
         status_code=exc.status_code,
@@ -91,7 +91,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
     )
 
 
-async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+async def generic_exception_handler(_request: Request, exc: Exception) -> JSONResponse:
     """Handle unexpected exceptions."""
     # Log the exception (in production, use proper logging)
     print(f"Unexpected error: {exc}")

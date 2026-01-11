@@ -47,18 +47,10 @@ class Fighter(Base, TimestampMixin):
     hometown: Mapped[str | None] = mapped_column(String(200))
 
     # Physical attributes (stored in metric)
-    height_cm: Mapped[float | None] = mapped_column(
-        comment="Height in centimeters"
-    )
-    weight_kg: Mapped[float | None] = mapped_column(
-        comment="Weight in kilograms"
-    )
-    reach_cm: Mapped[float | None] = mapped_column(
-        comment="Reach in centimeters"
-    )
-    leg_reach_cm: Mapped[float | None] = mapped_column(
-        comment="Leg reach in centimeters"
-    )
+    height_cm: Mapped[float | None] = mapped_column(comment="Height in centimeters")
+    weight_kg: Mapped[float | None] = mapped_column(comment="Weight in kilograms")
+    reach_cm: Mapped[float | None] = mapped_column(comment="Reach in centimeters")
+    leg_reach_cm: Mapped[float | None] = mapped_column(comment="Leg reach in centimeters")
 
     # Fighting style
     weight_class: Mapped[str | None] = mapped_column(

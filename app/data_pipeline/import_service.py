@@ -1,5 +1,6 @@
 """Import service for loading data into the database."""
 
+import contextlib
 import uuid
 from datetime import datetime
 
@@ -272,9 +273,7 @@ class ImportService:
                 imported[cache_key] = fighter
 
             except Exception as e:
-                result.add_error(
-                    f"Failed to import fighter {raw.first_name} {raw.last_name}: {e}"
-                )
+                result.add_error(f"Failed to import fighter {raw.first_name} {raw.last_name}: {e}")
 
         return imported
 
@@ -439,16 +438,13 @@ class ImportService:
                     result.fights_updated += 1
                     imported.append(existing)
                 else:
-                    fight = await self._create_fight(
-                        normalized, event, fighter1, fighter2, winner
-                    )
+                    fight = await self._create_fight(normalized, event, fighter1, fighter2, winner)
                     result.fights_created += 1
                     imported.append(fight)
 
             except Exception as e:
                 result.add_error(
-                    f"Failed to import fight {raw.fighter1_name} vs "
-                    f"{raw.fighter2_name}: {e}"
+                    f"Failed to import fight {raw.fighter1_name} vs {raw.fighter2_name}: {e}"
                 )
 
         return imported
@@ -523,9 +519,7 @@ class ImportService:
             import_record.errors = result.errors
             import_record.completed_at = datetime.utcnow()
 
-            try:
+            with contextlib.suppress(Exception):
                 await self.db.commit()
-            except Exception:
-                pass
 
         return result

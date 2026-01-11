@@ -53,9 +53,7 @@ class FightRepository(BaseRepository[Fight]):
         Returns:
             List of fights ordered by fight_order
         """
-        query = select(Fight).where(Fight.event_id == event_id).order_by(
-            Fight.fight_order.asc()
-        )
+        query = select(Fight).where(Fight.event_id == event_id).order_by(Fight.fight_order.asc())
 
         if include_fighters:
             query = query.options(
@@ -189,10 +187,8 @@ class FightRepository(BaseRepository[Fight]):
             select(Fight)
             .where(
                 or_(
-                    (Fight.fighter1_id == fighter1_id)
-                    & (Fight.fighter2_id == fighter2_id),
-                    (Fight.fighter1_id == fighter2_id)
-                    & (Fight.fighter2_id == fighter1_id),
+                    (Fight.fighter1_id == fighter1_id) & (Fight.fighter2_id == fighter2_id),
+                    (Fight.fighter1_id == fighter2_id) & (Fight.fighter2_id == fighter1_id),
                 )
             )
             .options(
@@ -243,10 +239,8 @@ class FightRepository(BaseRepository[Fight]):
             select(Fight).where(
                 Fight.event_id == event_id,
                 or_(
-                    (Fight.fighter1_id == fighter1_id)
-                    & (Fight.fighter2_id == fighter2_id),
-                    (Fight.fighter1_id == fighter2_id)
-                    & (Fight.fighter2_id == fighter1_id),
+                    (Fight.fighter1_id == fighter1_id) & (Fight.fighter2_id == fighter2_id),
+                    (Fight.fighter1_id == fighter2_id) & (Fight.fighter2_id == fighter1_id),
                 ),
             )
         )

@@ -410,9 +410,9 @@ class ESPNAdapter(DataSourceAdapter):
                 return None
 
             # Weight class
-            weight_class = normalize_weight_class(
-                comp_data.get("type", {}).get("text", "")
-            ) or "Unknown"
+            weight_class = (
+                normalize_weight_class(comp_data.get("type", {}).get("text", "")) or "Unknown"
+            )
 
             # Is title fight
             is_title = "title" in comp_data.get("type", {}).get("text", "").lower()

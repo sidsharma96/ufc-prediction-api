@@ -54,9 +54,7 @@ class TestListFighters:
         await FighterFactory.create(db_session, weight_class="Lightweight")
         await db_session.commit()
 
-        response = await client.get(
-            "/api/v1/fighters", params={"weight_class": "Heavyweight"}
-        )
+        response = await client.get("/api/v1/fighters", params={"weight_class": "Heavyweight"})
         assert response.status_code == 200
 
     @pytest.mark.asyncio
@@ -87,9 +85,7 @@ class TestGetFighter:
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_get_fighter_has_cache_headers(
-        self, client: AsyncClient, sample_fighters
-    ):
+    async def test_get_fighter_has_cache_headers(self, client: AsyncClient, sample_fighters):
         """Test cache headers are set."""
         response = await client.get(f"/api/v1/fighters/{sample_fighters[0].id}")
         assert response.status_code == 200
@@ -113,9 +109,7 @@ class TestGetFighterStats:
         assert "losses" in data
 
     @pytest.mark.asyncio
-    async def test_get_fighter_stats_no_snapshot(
-        self, client: AsyncClient, sample_fighters
-    ):
+    async def test_get_fighter_stats_no_snapshot(self, client: AsyncClient, sample_fighters):
         """Test stats without snapshot returns defaults."""
         fighter = sample_fighters[2]  # Third fighter has no fight/snapshot
         response = await client.get(f"/api/v1/fighters/{fighter.id}/stats")
@@ -134,9 +128,7 @@ class TestGetFighterHistory:
     """Tests for GET /api/v1/fighters/{fighter_id}/history"""
 
     @pytest.mark.asyncio
-    async def test_get_fighter_history(
-        self, client: AsyncClient, completed_fight, sample_fighters
-    ):
+    async def test_get_fighter_history(self, client: AsyncClient, completed_fight, sample_fighters):
         """Test getting fighter history."""
         fighter = sample_fighters[0]
         response = await client.get(f"/api/v1/fighters/{fighter.id}/history")
@@ -166,9 +158,7 @@ class TestSearchFighters:
         assert any("McGregor" in f["last_name"] for f in data)
 
     @pytest.mark.asyncio
-    async def test_search_fighters_by_nickname(
-        self, client: AsyncClient, sample_fighters
-    ):
+    async def test_search_fighters_by_nickname(self, client: AsyncClient, sample_fighters):
         """Test searching fighters by nickname."""
         response = await client.get("/api/v1/fighters/search/Notorious")
         assert response.status_code == 200

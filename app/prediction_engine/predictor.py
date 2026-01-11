@@ -141,9 +141,7 @@ class RuleBasedPredictor:
             winner_prob = 1.0 - win_probability
 
         # Calculate confidence
-        confidence = self._calculate_confidence(
-            fighter1, fighter2, abs(total_advantage)
-        )
+        confidence = self._calculate_confidence(fighter1, fighter2, abs(total_advantage))
         confidence_label = self._get_confidence_label(confidence)
 
         # Predict method
@@ -190,9 +188,10 @@ class RuleBasedPredictor:
         # Striking advantages
         acc_adv = (f1.striking_accuracy - f2.striking_accuracy) * w.striking_accuracy
         def_adv = (f1.striking_defense - f2.striking_defense) * w.striking_defense
-        diff_adv = self._normalize_differential(
-            f1.strike_differential, f2.strike_differential
-        ) * w.strike_differential
+        diff_adv = (
+            self._normalize_differential(f1.strike_differential, f2.strike_differential)
+            * w.strike_differential
+        )
         striking_total = acc_adv + def_adv + diff_adv
 
         if abs(striking_total) > 0.03:
@@ -203,9 +202,13 @@ class RuleBasedPredictor:
         td_acc_adv = (f1.takedown_accuracy - f2.takedown_accuracy) * w.takedown_accuracy
         td_def_adv = (f1.takedown_defense - f2.takedown_defense) * w.takedown_defense
         grap_off = (
-            (f1.takedowns_per_15min + f1.submissions_per_15min) -
-            (f2.takedowns_per_15min + f2.submissions_per_15min)
-        ) / 10.0 * w.grappling_offense
+            (
+                (f1.takedowns_per_15min + f1.submissions_per_15min)
+                - (f2.takedowns_per_15min + f2.submissions_per_15min)
+            )
+            / 10.0
+            * w.grappling_offense
+        )
         grappling_total = td_acc_adv + td_def_adv + grap_off
 
         if abs(grappling_total) > 0.03:
@@ -224,12 +227,8 @@ class RuleBasedPredictor:
             factors.append(f"{f2.fighter_name} on {f2.win_streak}-fight win streak")
 
         # Physical advantages
-        reach_adv = self._physical_advantage(
-            f1.reach_cm, f2.reach_cm, 10.0
-        ) * w.reach_advantage
-        height_adv = self._physical_advantage(
-            f1.height_cm, f2.height_cm, 15.0
-        ) * w.height_advantage
+        reach_adv = self._physical_advantage(f1.reach_cm, f2.reach_cm, 10.0) * w.reach_advantage
+        height_adv = self._physical_advantage(f1.height_cm, f2.height_cm, 15.0) * w.height_advantage
         age_adv = self._age_advantage(f1.age_years, f2.age_years) * w.age_advantage
         physical_total = reach_adv + height_adv + age_adv
 

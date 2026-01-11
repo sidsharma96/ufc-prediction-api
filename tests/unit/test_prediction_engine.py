@@ -2,10 +2,10 @@
 
 import pytest
 
+from app.prediction_engine.confidence import ConfidenceScorer
 from app.prediction_engine.feature_extractor import FeatureExtractor, FighterFeatures
 from app.prediction_engine.predictor import Prediction, RuleBasedPredictor
 from app.prediction_engine.weights import PredictionWeights
-from app.prediction_engine.confidence import ConfidenceScorer
 
 
 class TestPredictionWeights:

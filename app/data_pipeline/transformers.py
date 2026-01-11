@@ -166,8 +166,7 @@ class FighterTransformer:
             age = (today - fighter.date_of_birth).days / 365.25
             if age < 18 or age > 60:
                 result.add_warning(
-                    f"Unusual age: {age:.1f} years for "
-                    f"{fighter.first_name} {fighter.last_name}"
+                    f"Unusual age: {age:.1f} years for {fighter.first_name} {fighter.last_name}"
                 )
 
         return result

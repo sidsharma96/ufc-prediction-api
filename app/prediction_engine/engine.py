@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.core.redis import CACHE_KEY_ACCURACY_STATS, get_cached, set_cached
-from app.db.models import Fight, Fighter, FighterSnapshot
+from app.db.models import Fight, Fighter
 from app.prediction_engine.confidence import ConfidenceScorer
 from app.prediction_engine.feature_extractor import FeatureExtractor, FighterFeatures
 from app.prediction_engine.predictor import Prediction, RuleBasedPredictor
@@ -277,9 +277,7 @@ class PredictionEngine:
     async def _load_fighter(self, fighter_id: uuid.UUID) -> Fighter | None:
         """Load fighter with snapshots."""
         result = await self.db.execute(
-            select(Fighter)
-            .where(Fighter.id == fighter_id)
-            .options(selectinload(Fighter.snapshots))
+            select(Fighter).where(Fighter.id == fighter_id).options(selectinload(Fighter.snapshots))
         )
         return result.scalar_one_or_none()
 

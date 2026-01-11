@@ -28,14 +28,10 @@ class SystemPredictionRepository(BaseRepository[SystemPrediction]):
         Returns:
             SystemPrediction or None
         """
-        query = select(SystemPrediction).where(
-            SystemPrediction.fight_id == fight_id
-        )
+        query = select(SystemPrediction).where(SystemPrediction.fight_id == fight_id)
 
         if algorithm_version:
-            query = query.where(
-                SystemPrediction.algorithm_version == algorithm_version
-            )
+            query = query.where(SystemPrediction.algorithm_version == algorithm_version)
         else:
             query = query.order_by(SystemPrediction.created_at.desc())
 
@@ -74,14 +70,10 @@ class SystemPredictionRepository(BaseRepository[SystemPrediction]):
         Returns:
             Dictionary with accuracy statistics
         """
-        base_query = select(SystemPrediction).where(
-            SystemPrediction.is_correct.isnot(None)
-        )
+        base_query = select(SystemPrediction).where(SystemPrediction.is_correct.isnot(None))
 
         if algorithm_version:
-            base_query = base_query.where(
-                SystemPrediction.algorithm_version == algorithm_version
-            )
+            base_query = base_query.where(SystemPrediction.algorithm_version == algorithm_version)
 
         # Total resolved
         total_result = await self.db.execute(

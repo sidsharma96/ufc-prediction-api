@@ -71,9 +71,19 @@ class PredictionWeights:
     def total_weight(self) -> float:
         """Calculate total of all weights."""
         return (
-            self.win_rate + self.experience + self.finish_rate +
-            self.striking_accuracy + self.striking_defense + self.strike_differential +
-            self.takedown_accuracy + self.takedown_defense + self.grappling_offense +
-            self.recent_form + self.win_streak + self.activity +
-            self.reach_advantage + self.height_advantage + self.age_advantage
+            self.win_rate
+            + self.experience
+            + self.finish_rate
+            + self.striking_accuracy
+            + self.striking_defense
+            + self.strike_differential
+            + self.takedown_accuracy
+            + self.takedown_defense
+            + self.grappling_offense
+            + self.recent_form
+            + self.win_streak
+            + self.activity
+            + self.reach_advantage
+            + self.height_advantage
+            + self.age_advantage
         )

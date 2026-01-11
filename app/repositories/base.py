@@ -42,9 +42,7 @@ class BaseRepository(Generic[ModelType]):
         Returns:
             Model instance or None if not found
         """
-        result = await self.db.execute(
-            select(self.model).where(self.model.id == id)
-        )
+        result = await self.db.execute(select(self.model).where(self.model.id == id))
         return result.scalar_one_or_none()
 
     async def get_by_ids(self, ids: list[uuid.UUID]) -> Sequence[ModelType]:
@@ -58,9 +56,7 @@ class BaseRepository(Generic[ModelType]):
         """
         if not ids:
             return []
-        result = await self.db.execute(
-            select(self.model).where(self.model.id.in_(ids))
-        )
+        result = await self.db.execute(select(self.model).where(self.model.id.in_(ids)))
         return result.scalars().all()
 
     async def get_all(
@@ -78,9 +74,7 @@ class BaseRepository(Generic[ModelType]):
         Returns:
             List of model instances
         """
-        result = await self.db.execute(
-            select(self.model).offset(skip).limit(limit)
-        )
+        result = await self.db.execute(select(self.model).offset(skip).limit(limit))
         return result.scalars().all()
 
     async def count(self, *conditions) -> int:

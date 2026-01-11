@@ -24,9 +24,7 @@ class EventRepository(BaseRepository[Event]):
         Returns:
             Event instance or None
         """
-        result = await self.db.execute(
-            select(Event).where(Event.ufc_id == ufc_id)
-        )
+        result = await self.db.execute(select(Event).where(Event.ufc_id == ufc_id))
         return result.scalar_one_or_none()
 
     async def get_by_name_and_date(
@@ -85,11 +83,16 @@ class EventRepository(BaseRepository[Event]):
         Returns:
             List of upcoming events
         """
-        query = select(Event).where(
-            Event.is_completed.is_(False),
-            Event.is_cancelled.is_(False),
-            Event.date >= date.today(),
-        ).order_by(Event.date.asc()).limit(limit)
+        query = (
+            select(Event)
+            .where(
+                Event.is_completed.is_(False),
+                Event.is_cancelled.is_(False),
+                Event.date >= date.today(),
+            )
+            .order_by(Event.date.asc())
+            .limit(limit)
+        )
 
         if include_fights:
             query = query.options(
@@ -117,9 +120,15 @@ class EventRepository(BaseRepository[Event]):
         Returns:
             List of completed events
         """
-        query = select(Event).where(
-            Event.is_completed.is_(True),
-        ).order_by(Event.date.desc()).offset(skip).limit(limit)
+        query = (
+            select(Event)
+            .where(
+                Event.is_completed.is_(True),
+            )
+            .order_by(Event.date.desc())
+            .offset(skip)
+            .limit(limit)
+        )
 
         if include_fights:
             query = query.options(

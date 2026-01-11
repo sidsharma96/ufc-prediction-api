@@ -187,7 +187,7 @@ class PipelineOrchestrator:
                     fight.event_date = event.event_date
                     all_fights.append(fight)
 
-            except Exception as e:
+            except Exception:
                 # Log but continue with other events
                 pass
 
@@ -254,9 +254,7 @@ class PipelineOrchestrator:
         # Calculate any missing snapshots
         if espn_result.fights_created > 0:
             snapshot_stats = await self.snapshot_calculator.calculate_all_snapshots()
-            espn_result.errors.append(
-                f"Snapshots: {snapshot_stats['snapshots_created']} created"
-            )
+            espn_result.errors.append(f"Snapshots: {snapshot_stats['snapshots_created']} created")
 
         return results
 

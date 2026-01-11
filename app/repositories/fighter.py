@@ -24,9 +24,7 @@ class FighterRepository(BaseRepository[Fighter]):
         Returns:
             Fighter instance or None
         """
-        result = await self.db.execute(
-            select(Fighter).where(Fighter.ufc_id == ufc_id)
-        )
+        result = await self.db.execute(select(Fighter).where(Fighter.ufc_id == ufc_id))
         return result.scalar_one_or_none()
 
     async def get_by_name(
@@ -102,9 +100,7 @@ class FighterRepository(BaseRepository[Fighter]):
         Returns:
             List of fighters in weight class
         """
-        query = select(Fighter).where(
-            func.lower(Fighter.weight_class) == weight_class.lower()
-        )
+        query = select(Fighter).where(func.lower(Fighter.weight_class) == weight_class.lower())
         if active_only:
             query = query.where(Fighter.is_active.is_(True))
         query = query.offset(skip).limit(limit)
@@ -128,10 +124,7 @@ class FighterRepository(BaseRepository[Fighter]):
             List of active fighters
         """
         result = await self.db.execute(
-            select(Fighter)
-            .where(Fighter.is_active.is_(True))
-            .offset(skip)
-            .limit(limit)
+            select(Fighter).where(Fighter.is_active.is_(True)).offset(skip).limit(limit)
         )
         return result.scalars().all()
 
@@ -148,9 +141,7 @@ class FighterRepository(BaseRepository[Fighter]):
             Fighter with snapshots or None
         """
         result = await self.db.execute(
-            select(Fighter)
-            .options(selectinload(Fighter.snapshots))
-            .where(Fighter.id == fighter_id)
+            select(Fighter).options(selectinload(Fighter.snapshots)).where(Fighter.id == fighter_id)
         )
         return result.scalar_one_or_none()
 
@@ -185,7 +176,9 @@ class FighterRepository(BaseRepository[Fighter]):
         """
         search_term = f"%{query.lower()}%"
         result = await self.db.execute(
-            select(func.count()).select_from(Fighter).where(
+            select(func.count())
+            .select_from(Fighter)
+            .where(
                 or_(
                     func.lower(Fighter.first_name).like(search_term),
                     func.lower(Fighter.last_name).like(search_term),

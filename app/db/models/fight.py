@@ -185,9 +185,7 @@ class Fight(Base, TimestampMixin):
             return f"{self.winner.last_name} via {method}"
         return "Unknown"
 
-    def get_snapshot_for_fighter(
-        self, fighter_id: uuid.UUID
-    ) -> Optional["FighterSnapshot"]:
+    def get_snapshot_for_fighter(self, fighter_id: uuid.UUID) -> Optional["FighterSnapshot"]:
         """Get the pre-fight snapshot for a specific fighter."""
         for snapshot in self.snapshots:
             if snapshot.fighter_id == fighter_id:

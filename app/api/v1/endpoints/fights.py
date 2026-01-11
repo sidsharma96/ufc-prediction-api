@@ -163,14 +163,18 @@ async def get_fight(
             last_name=fight.fighter1.last_name,
             nickname=fight.fighter1.nickname,
             image_url=fight.fighter1.image_url,
-        ) if fight.fighter1 else None,
+        )
+        if fight.fighter1
+        else None,
         fighter2=FighterBrief(
             id=fight.fighter2.id,
             first_name=fight.fighter2.first_name,
             last_name=fight.fighter2.last_name,
             nickname=fight.fighter2.nickname,
             image_url=fight.fighter2.image_url,
-        ) if fight.fighter2 else None,
+        )
+        if fight.fighter2
+        else None,
         fighter1_snapshot=fighter1_snapshot,
         fighter2_snapshot=fighter2_snapshot,
         winner_id=fight.winner_id,

@@ -54,9 +54,7 @@ class TestGetFightPrediction:
         assert response.status_code == 404
 
     @pytest.mark.asyncio
-    async def test_prediction_has_cache_headers(
-        self, client: AsyncClient, sample_fight
-    ):
+    async def test_prediction_has_cache_headers(self, client: AsyncClient, sample_fight):
         """Test cache headers are set."""
         response = await client.get(f"/api/v1/predictions/fight/{sample_fight.id}")
         assert response.status_code == 200
@@ -67,16 +65,14 @@ class TestPredictMatchup:
     """Tests for POST /api/v1/predictions/matchup"""
 
     @pytest.mark.asyncio
-    async def test_predict_matchup(
-        self, client: AsyncClient, sample_fighters, sample_fight
-    ):
+    async def test_predict_matchup(self, client: AsyncClient, sample_fighters, sample_fight):
         """Test predicting hypothetical matchup."""
         response = await client.post(
             "/api/v1/predictions/matchup",
             json={
                 "fighter1_id": str(sample_fighters[0].id),
                 "fighter2_id": str(sample_fighters[1].id),
-            }
+            },
         )
         assert response.status_code == 200
         data = response.json()
@@ -93,23 +89,21 @@ class TestPredictMatchup:
             json={
                 "fighter1_id": str(sample_fighters[0].id),
                 "fighter2_id": str(sample_fighters[2].id),
-            }
+            },
         )
         assert response.status_code == 200
         data = response.json()
         assert "predicted_winner" in data
 
     @pytest.mark.asyncio
-    async def test_predict_matchup_invalid_fighter(
-        self, client: AsyncClient, sample_fighters
-    ):
+    async def test_predict_matchup_invalid_fighter(self, client: AsyncClient, sample_fighters):
         """Test error for invalid fighter ID."""
         response = await client.post(
             "/api/v1/predictions/matchup",
             json={
                 "fighter1_id": str(sample_fighters[0].id),
                 "fighter2_id": str(uuid4()),
-            }
+            },
         )
         assert response.status_code in [400, 404]
 
@@ -117,8 +111,7 @@ class TestPredictMatchup:
     async def test_predict_matchup_missing_fields(self, client: AsyncClient):
         """Test error for missing required fields."""
         response = await client.post(
-            "/api/v1/predictions/matchup",
-            json={"fighter1_id": str(uuid4())}
+            "/api/v1/predictions/matchup", json={"fighter1_id": str(uuid4())}
         )
         assert response.status_code == 422  # Validation error
 
@@ -149,9 +142,7 @@ class TestUpcomingPredictions:
         assert len(response.json()) <= 5
 
     @pytest.mark.asyncio
-    async def test_upcoming_predictions_structure(
-        self, client: AsyncClient, sample_fight
-    ):
+    async def test_upcoming_predictions_structure(self, client: AsyncClient, sample_fight):
         """Test upcoming prediction response structure."""
         response = await client.get("/api/v1/predictions/upcoming")
         assert response.status_code == 200

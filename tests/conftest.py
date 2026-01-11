@@ -2,8 +2,8 @@
 
 import asyncio
 import os
+from collections.abc import AsyncGenerator
 from datetime import date, timedelta
-from typing import AsyncGenerator
 from uuid import uuid4
 
 import pytest
@@ -17,11 +17,10 @@ from app.db.models import Event, Fight, Fighter, FighterSnapshot
 from app.db.session import get_db
 from app.main import app
 
-
 # Use PostgreSQL test database (same as dev but different db name)
 TEST_DATABASE_URL = os.getenv(
     "TEST_DATABASE_URL",
-    "postgresql+asyncpg://postgres:postgres@localhost:5433/ufc_predictions_test"
+    "postgresql+asyncpg://postgres:postgres@localhost:5433/ufc_predictions_test",
 )
 
 
@@ -49,9 +48,7 @@ async def test_engine():
 @pytest_asyncio.fixture
 async def db_session(test_engine) -> AsyncGenerator[AsyncSession, None]:
     """Provide transactional database session."""
-    async_session = sessionmaker(
-        test_engine, class_=AsyncSession, expire_on_commit=False
-    )
+    async_session = sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
     async with async_session() as session:
         yield session
         await session.rollback()
@@ -66,10 +63,7 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 
     app.dependency_overrides[get_db] = override_get_db
 
-    async with AsyncClient(
-        transport=ASGITransport(app=app),
-        base_url="http://test"
-    ) as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         yield ac
 
     app.dependency_overrides.clear()
@@ -79,15 +73,13 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 # Test Data Factories
 # =============================================================================
 
+
 class FighterFactory:
     """Factory for creating test fighters."""
 
     @staticmethod
     async def create(
-        db: AsyncSession,
-        first_name: str = "Test",
-        last_name: str = "Fighter",
-        **kwargs
+        db: AsyncSession, first_name: str = "Test", last_name: str = "Fighter", **kwargs
     ) -> Fighter:
         defaults = {
             "id": uuid4(),
@@ -108,11 +100,7 @@ class EventFactory:
     """Factory for creating test events."""
 
     @staticmethod
-    async def create(
-        db: AsyncSession,
-        name: str = "UFC Test Event",
-        **kwargs
-    ) -> Event:
+    async def create(db: AsyncSession, name: str = "UFC Test Event", **kwargs) -> Event:
         defaults = {
             "id": uuid4(),
             "name": name,
@@ -135,11 +123,7 @@ class FightFactory:
 
     @staticmethod
     async def create(
-        db: AsyncSession,
-        event: Event,
-        fighter1: Fighter,
-        fighter2: Fighter,
-        **kwargs
+        db: AsyncSession, event: Event, fighter1: Fighter, fighter2: Fighter, **kwargs
     ) -> Fight:
         defaults = {
             "id": uuid4(),
@@ -161,12 +145,7 @@ class SnapshotFactory:
     """Factory for creating fighter snapshots."""
 
     @staticmethod
-    async def create(
-        db: AsyncSession,
-        fighter: Fighter,
-        fight: Fight,
-        **kwargs
-    ) -> FighterSnapshot:
+    async def create(db: AsyncSession, fighter: Fighter, fight: Fight, **kwargs) -> FighterSnapshot:
         defaults = {
             "id": uuid4(),
             "fighter_id": fighter.id,
@@ -190,19 +169,14 @@ class SnapshotFactory:
 # Pre-built Fixtures
 # =============================================================================
 
+
 @pytest_asyncio.fixture
 async def sample_fighters(db_session: AsyncSession) -> list[Fighter]:
     """Create sample fighters for testing."""
     fighters = [
-        await FighterFactory.create(
-            db_session, "Conor", "McGregor", nickname="The Notorious"
-        ),
-        await FighterFactory.create(
-            db_session, "Dustin", "Poirier", nickname="The Diamond"
-        ),
-        await FighterFactory.create(
-            db_session, "Khabib", "Nurmagomedov", nickname="The Eagle"
-        ),
+        await FighterFactory.create(db_session, "Conor", "McGregor", nickname="The Notorious"),
+        await FighterFactory.create(db_session, "Dustin", "Poirier", nickname="The Diamond"),
+        await FighterFactory.create(db_session, "Khabib", "Nurmagomedov", nickname="The Eagle"),
     ]
     await db_session.commit()
     return fighters
@@ -218,9 +192,7 @@ async def sample_event(db_session: AsyncSession) -> Event:
 
 @pytest_asyncio.fixture
 async def sample_fight(
-    db_session: AsyncSession,
-    sample_event: Event,
-    sample_fighters: list[Fighter]
+    db_session: AsyncSession, sample_event: Event, sample_fighters: list[Fighter]
 ) -> Fight:
     """Create sample fight with snapshots."""
     fight = await FightFactory.create(
@@ -241,9 +213,7 @@ async def sample_fight(
 
 @pytest_asyncio.fixture
 async def completed_fight(
-    db_session: AsyncSession,
-    sample_event: Event,
-    sample_fighters: list[Fighter]
+    db_session: AsyncSession, sample_event: Event, sample_fighters: list[Fighter]
 ) -> Fight:
     """Create a completed fight for testing."""
     # Mark event as completed

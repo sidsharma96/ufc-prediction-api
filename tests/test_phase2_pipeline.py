@@ -18,8 +18,7 @@ from app.data_pipeline.transformers import (
     FightTransformer,
     normalize_name,
 )
-from app.db.models import Event, Fight, Fighter, FighterSnapshot
-
+from app.db.models import Fight, FighterSnapshot
 
 # Test fixtures path
 FIXTURES_PATH = Path(__file__).parent / "fixtures"
@@ -184,7 +183,7 @@ class TestImportPipeline:
         assert result.events_created > 0
         assert result.fights_created > 0
 
-        print(f"\nImport Results:")
+        print("\nImport Results:")
         print(f"  Fighters: {result.fighters_created} created")
         print(f"  Events: {result.events_created} created")
         print(f"  Fights: {result.fights_created} created")
@@ -207,7 +206,7 @@ class TestImportPipeline:
         calculator = SnapshotCalculator(db_session)
         stats = await calculator.calculate_all_snapshots()
 
-        print(f"\nSnapshot Results:")
+        print("\nSnapshot Results:")
         print(f"  Fights processed: {stats['fights_processed']}")
         print(f"  Snapshots created: {stats['snapshots_created']}")
 
