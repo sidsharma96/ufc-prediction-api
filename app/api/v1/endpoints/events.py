@@ -4,7 +4,7 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.schemas import (
@@ -15,6 +15,7 @@ from app.api.v1.schemas import (
     PaginatedResponse,
     UpcomingEvent,
 )
+from app.core.caching import cache_medium, cache_short
 from app.core.exceptions import NotFoundException
 from app.db.session import get_db
 from app.repositories import EventRepository
@@ -31,6 +32,7 @@ async def get_event_repo(
 
 @router.get("", response_model=EventsResponse)
 async def list_events(
+    response: Response,
     repo: Annotated[EventRepository, Depends(get_event_repo)],
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(20, ge=1, le=100, description="Items per page"),
@@ -39,6 +41,7 @@ async def list_events(
     to_date: date | None = Query(None, description="Filter to date"),
 ) -> EventsResponse:
     """List events with pagination and filters."""
+    cache_short(response)  # 5 minute cache
     offset = (page - 1) * per_page
 
     if from_date and to_date:
@@ -83,10 +86,12 @@ async def list_events(
 
 @router.get("/upcoming", response_model=list[UpcomingEvent])
 async def get_upcoming_events(
+    response: Response,
     repo: Annotated[EventRepository, Depends(get_event_repo)],
     limit: int = Query(5, ge=1, le=20, description="Number of events"),
 ) -> list[UpcomingEvent]:
     """Get upcoming UFC events."""
+    cache_short(response)  # 5 minute cache
     events = await repo.get_upcoming(limit=limit, include_fights=True)
 
     result = []
@@ -118,9 +123,11 @@ async def get_upcoming_events(
 @router.get("/{event_id}", response_model=EventDetail)
 async def get_event(
     event_id: UUID,
+    response: Response,
     repo: Annotated[EventRepository, Depends(get_event_repo)],
 ) -> EventDetail:
     """Get event details with fights."""
+    cache_medium(response)  # 1 hour cache
     event = await repo.get_with_fights(event_id)
 
     if not event:
@@ -162,10 +169,12 @@ async def get_event(
 @router.get("/search/{query}", response_model=list[EventListItem])
 async def search_events(
     query: str,
+    response: Response,
     repo: Annotated[EventRepository, Depends(get_event_repo)],
     limit: int = Query(10, ge=1, le=50, description="Maximum results"),
 ) -> list[EventListItem]:
     """Search events by name."""
+    cache_short(response)  # 5 minute cache
     events = await repo.search_by_name(query, limit=limit)
 
     return [

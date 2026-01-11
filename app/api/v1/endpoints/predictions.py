@@ -3,7 +3,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.schemas.prediction import (
@@ -16,6 +16,7 @@ from app.api.v1.schemas.prediction import (
     PredictedWinner,
     PredictionResponse,
 )
+from app.core.caching import cache_long, cache_medium, cache_short
 from app.core.exceptions import NotFoundException
 from app.db.session import get_db
 from app.prediction_engine import PredictionEngine
@@ -60,6 +61,7 @@ def prediction_to_response(prediction) -> PredictionResponse:
 @router.get("/fight/{fight_id}", response_model=PredictionResponse)
 async def get_fight_prediction(
     fight_id: UUID,
+    response: Response,
     engine: Annotated[PredictionEngine, Depends(get_prediction_engine)],
 ) -> PredictionResponse:
     """Get prediction for a specific fight.
@@ -70,6 +72,7 @@ async def get_fight_prediction(
     - Breakdown of advantages by category
     - Key factors influencing the prediction
     """
+    cache_medium(response)  # 1 hour cache
     try:
         prediction = await engine.predict_fight(fight_id)
         return prediction_to_response(prediction)
@@ -103,6 +106,7 @@ async def predict_matchup(
 
 @router.get("/upcoming", response_model=list[FightPredictionListItem])
 async def get_upcoming_predictions(
+    response: Response,
     engine: Annotated[PredictionEngine, Depends(get_prediction_engine)],
     limit: int = Query(20, ge=1, le=50, description="Maximum predictions to return"),
 ) -> list[FightPredictionListItem]:
@@ -110,6 +114,7 @@ async def get_upcoming_predictions(
 
     Returns a list of predictions ordered by event date.
     """
+    cache_short(response)  # 5 minute cache
     predictions = await engine.predict_upcoming_fights(limit=limit)
 
     return [
@@ -129,6 +134,7 @@ async def get_upcoming_predictions(
 
 @router.get("/accuracy", response_model=AccuracyResponse)
 async def get_prediction_accuracy(
+    response: Response,
     engine: Annotated[PredictionEngine, Depends(get_prediction_engine)],
 ) -> AccuracyResponse:
     """Get prediction accuracy statistics.
@@ -136,6 +142,7 @@ async def get_prediction_accuracy(
     Returns overall accuracy and accuracy broken down by confidence level.
     Based on backtesting predictions against completed fights.
     """
+    cache_long(response)  # 24 hour cache (stats change slowly)
     stats = await engine.get_accuracy_stats()
 
     by_confidence = {}

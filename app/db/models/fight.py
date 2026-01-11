@@ -139,6 +139,8 @@ class Fight(Base, TimestampMixin):
         ),
         Index("idx_fights_event_order", "event_id", "fight_order"),
         Index("idx_fights_status_date", "status"),
+        # Optimized for filtered fight queries by event and status
+        Index("idx_fights_event_status", "event_id", "status"),
     )
 
     @property

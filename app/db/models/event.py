@@ -82,6 +82,8 @@ class Event(Base, TimestampMixin):
     __table_args__ = (
         Index("idx_events_date_completed", "date", "is_completed"),
         Index("idx_events_type_date", "event_type", "date"),
+        # Optimized for upcoming events query (is_completed=False, is_cancelled=False, ORDER BY date)
+        Index("idx_events_upcoming", "is_completed", "is_cancelled", "date"),
     )
 
     @property

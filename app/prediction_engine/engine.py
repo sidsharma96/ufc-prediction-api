@@ -187,14 +187,10 @@ class PredictionEngine:
 
         for fight in fights:
             try:
-                # Get snapshots for this fight
-                f1_snapshot = None
-                f2_snapshot = None
-                for snap in fight.snapshots:
-                    if snap.fighter_id == fight.fighter1_id:
-                        f1_snapshot = snap
-                    elif snap.fighter_id == fight.fighter2_id:
-                        f2_snapshot = snap
+                # Get snapshots using O(1) lookup
+                snapshot_map = {s.fighter_id: s for s in fight.snapshots}
+                f1_snapshot = snapshot_map.get(fight.fighter1_id)
+                f2_snapshot = snapshot_map.get(fight.fighter2_id)
 
                 if not f1_snapshot or not f2_snapshot:
                     continue
@@ -280,12 +276,11 @@ class PredictionEngine:
         """
         snapshot = None
 
-        # Try to get fight-specific snapshot
+        # Try to get fight-specific snapshot using O(1) lookup
         if fight:
-            for snap in getattr(fight, "snapshots", []):
-                if snap.fighter_id == fighter.id:
-                    snapshot = snap
-                    break
+            fight_snapshots = getattr(fight, "snapshots", [])
+            snapshot_map = {s.fighter_id: s for s in fight_snapshots}
+            snapshot = snapshot_map.get(fighter.id)
 
         # Fallback to most recent snapshot
         if not snapshot and fighter.snapshots:

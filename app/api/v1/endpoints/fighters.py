@@ -3,7 +3,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.schemas import (
@@ -15,6 +15,7 @@ from app.api.v1.schemas import (
     FightHistoryItem,
     PaginatedResponse,
 )
+from app.core.caching import cache_medium, cache_short
 from app.core.exceptions import NotFoundException
 from app.db.session import get_db
 from app.repositories import FighterRepository, FightRepository
@@ -38,6 +39,7 @@ async def get_fight_repo(
 
 @router.get("", response_model=FightersResponse)
 async def list_fighters(
+    response: Response,
     repo: Annotated[FighterRepository, Depends(get_fighter_repo)],
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(20, ge=1, le=100, description="Items per page"),
@@ -46,6 +48,7 @@ async def list_fighters(
     active_only: bool = Query(True, description="Only active fighters"),
 ) -> FightersResponse:
     """List fighters with pagination and filters."""
+    cache_short(response)  # 5 minute cache
     offset = (page - 1) * per_page
 
     if search:
@@ -89,9 +92,11 @@ async def list_fighters(
 @router.get("/{fighter_id}", response_model=FighterDetail)
 async def get_fighter(
     fighter_id: UUID,
+    response: Response,
     repo: Annotated[FighterRepository, Depends(get_fighter_repo)],
 ) -> FighterDetail:
     """Get fighter details."""
+    cache_medium(response)  # 1 hour cache
     fighter = await repo.get(fighter_id)
 
     if not fighter:
@@ -120,9 +125,11 @@ async def get_fighter(
 @router.get("/{fighter_id}/stats", response_model=FighterStats)
 async def get_fighter_stats(
     fighter_id: UUID,
+    response: Response,
     repo: Annotated[FighterRepository, Depends(get_fighter_repo)],
 ) -> FighterStats:
     """Get fighter current statistics from latest snapshot."""
+    cache_medium(response)  # 1 hour cache
     fighter = await repo.get(fighter_id)
     if not fighter:
         raise NotFoundException("Fighter", str(fighter_id))
@@ -153,11 +160,13 @@ async def get_fighter_stats(
 @router.get("/{fighter_id}/history", response_model=FighterHistory)
 async def get_fighter_history(
     fighter_id: UUID,
+    response: Response,
     fighter_repo: Annotated[FighterRepository, Depends(get_fighter_repo)],
     fight_repo: Annotated[FightRepository, Depends(get_fight_repo)],
     limit: int = Query(20, ge=1, le=100, description="Maximum fights to return"),
 ) -> FighterHistory:
     """Get fighter's fight history."""
+    cache_medium(response)  # 1 hour cache
     fighter = await fighter_repo.get(fighter_id)
     if not fighter:
         raise NotFoundException("Fighter", str(fighter_id))
@@ -210,10 +219,12 @@ async def get_fighter_history(
 @router.get("/search/{query}", response_model=list[FighterListItem])
 async def search_fighters(
     query: str,
+    response: Response,
     repo: Annotated[FighterRepository, Depends(get_fighter_repo)],
     limit: int = Query(20, ge=1, le=100, description="Maximum results"),
 ) -> list[FighterListItem]:
     """Search fighters by name or nickname."""
+    cache_short(response)  # 5 minute cache
     fighters = await repo.search(query, limit=limit)
 
     return [

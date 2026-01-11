@@ -3,6 +3,7 @@
 Calculates weighted advantages between fighters to predict outcomes.
 """
 
+import math
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -299,7 +300,6 @@ class RuleBasedPredictor:
 
         # Sigmoid transformation centered at 0.5
         # advantage of 0 -> 0.5, advantage of 1 -> ~0.85
-        import math
         prob = 1.0 / (1.0 + math.exp(-advantage * 3))
 
         return prob
