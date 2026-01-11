@@ -31,6 +31,19 @@ class Settings(BaseSettings):
     database_url: PostgresDsn
     database_echo: bool = False
 
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def fix_postgres_scheme(cls, v: Any) -> Any:
+        """Convert postgres:// to postgresql+asyncpg:// for SQLAlchemy async compatibility."""
+        if isinstance(v, str):
+            # Fly.io and Heroku use postgres:// but SQLAlchemy needs postgresql://
+            if v.startswith("postgres://"):
+                v = v.replace("postgres://", "postgresql://", 1)
+            # Add asyncpg driver if not present
+            if v.startswith("postgresql://"):
+                v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
+
     # Redis
     redis_url: RedisDsn = "redis://localhost:6379/0"  # type: ignore
 
